@@ -1,1 +1,1 @@
-import AdminSidebar from "@/components/admin/AdminSidebar"; export default function DashboardLayout({children}){return <div className="min-h-screen bg-[#f7f9fc] lg:grid lg:grid-cols-[250px_1fr]"><AdminSidebar/><main className="p-5 md:p-8">{children}</main></div>}
+import AdminSidebar from "@/components/admin/AdminSidebar"; export default function DashboardLayout({children}){return <div className="min-h-screen bg-[#f8f5ef] lg:grid lg:grid-cols-[250px_1fr]"><AdminSidebar/><main className="p-5 md:p-8">{children}</main></div>}

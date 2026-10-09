@@ -1,15 +1,17 @@
 {
-  "name": "viago-travel",
+  "name": "stayvo-kochi",
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
     "start": "next start",
     "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:seed": "node prisma/seed.js"
+    "prisma:seed": "node prisma/seed.js",
+    "admin:sync": "node prisma/sync-admin.js",
+    "test": "node --experimental-vm-modules --test tests/*.test.cjs"
   },
   "dependencies": {
     "@prisma/client": "^6.14.0",

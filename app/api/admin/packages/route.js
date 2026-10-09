@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { refreshPublicPackages } from "@/lib/publicCache";
 import { getAdminSession } from "@/lib/auth";
 import { parsePackageForm } from "@/lib/packageFormData";
 
@@ -146,6 +147,7 @@ export async function POST(request) {
         },
       });
 
+    refreshPublicPackages();
     return Response.json(
       pkg,
       {

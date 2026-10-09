@@ -9,7 +9,7 @@ export async function proxy(request) {
     return NextResponse.next();
   }
 
-  const token = request.cookies.get("viago_admin")?.value;
+  const token = request.cookies.get("stayvo_admin")?.value;
   if (!token) return NextResponse.redirect(new URL("/admin/login", request.url));
 
   try {
@@ -17,7 +17,7 @@ export async function proxy(request) {
     return NextResponse.next();
   } catch {
     const response = NextResponse.redirect(new URL("/admin/login", request.url));
-    response.cookies.delete("viago_admin");
+    response.cookies.delete("stayvo_admin");
     return response;
   }
 }

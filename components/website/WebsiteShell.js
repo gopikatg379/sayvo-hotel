@@ -3,11 +3,11 @@ import Footer from "./Footer";
 import WhatsAppFloat from "./WhatsAppFloat";
 import VisitorTracker from "./VisitorTracker";
 
-export default function WebsiteShell({ children }) {
+export default function WebsiteShell({ children, trackVisits = true }) {
   return (
     <>
 
-      <VisitorTracker />
+      {trackVisits && <VisitorTracker />}
 
       <Navbar />
 

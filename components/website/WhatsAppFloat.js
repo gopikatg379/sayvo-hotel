@@ -36,17 +36,17 @@ export default function WhatsAppFloat() {
             <X size={14} />
           </button>
 
-          <p className="pr-6 text-sm font-bold text-[#173f35]">
-            Planning your next trip?
+          <p className="pr-6 text-sm font-bold text-[#20211f]">
+            Planning a Kochi stay?
           </p>
 
           <p className="mt-1 text-xs leading-5 text-gray-600">
-            Chat with Viago on WhatsApp. We’ll help you plan it.
+            Chat with Stayvo Kochi on WhatsApp. We’ll help you plan it.
           </p>
 
           <a
             href={whatsappUrl(
-              "Hi Viago, I would like help planning a trip."
+              "Hi Stayvo Kochi, I would like help planning a stay."
             )}
             target="_blank"
             rel="noreferrer"
@@ -61,11 +61,11 @@ export default function WhatsAppFloat() {
       {/* WhatsApp button */}
       <a
         href={whatsappUrl(
-          "Hi Viago, I would like help planning a trip."
+          "Hi Stayvo Kochi, I would like help planning a stay."
         )}
         target="_blank"
         rel="noreferrer"
-        aria-label="Chat with Viago on WhatsApp"
+        aria-label="Chat with Stayvo Kochi on WhatsApp"
         className="whatsapp-float group relative grid h-[62px] w-[62px] place-items-center rounded-full bg-[#25D366] shadow-[0_12px_35px_rgba(37,211,102,0.4)] transition duration-300 hover:scale-110"
       >
         {/* Pulse rings */}

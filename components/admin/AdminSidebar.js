@@ -4,31 +4,31 @@ import {
   PackageOpen,
   MessageSquareText,
   LogOut,
-  Plane,
+  Hotel,
   Star,
 } from "lucide-react";
 
 export default function AdminSidebar() {
   return (
-    <aside className="border-r border-slate-200 bg-[#08162f] p-5 text-white lg:min-h-screen">
+    <aside className="border-r border-slate-200 bg-[#151614] p-5 text-white lg:min-h-screen">
       
       {/* Logo */}
       <Link
         href="/admin/dashboard"
         className="flex items-center gap-3 px-2 text-xl font-black"
       >
-        <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#3A86FF]">
-          <Plane size={20} />
+        <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#8a621b]">
+          <Hotel size={20} />
         </span>
 
-        Viago Admin
+        Stayvo Kochi Admin
       </Link>
 
       {/* Navigation */}
       <nav className="mt-10 grid gap-2">
         {[
           [LayoutDashboard, "Dashboard", "/admin/dashboard"],
-          [PackageOpen, "Packages", "/admin/packages"],
+          [PackageOpen, "Rooms & packages", "/admin/packages"],
           [MessageSquareText, "Enquiries", "/admin/enquiries"],
           [Star, "Reviews", "/admin/reviews"],
         ].map(([Icon, title, href]) => (

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import prisma from "@/lib/prisma";
+import { getDashboardData } from "@/lib/dashboard";
 
 import {
   PackageOpen,
@@ -14,7 +14,7 @@ import {
   CalendarDays,
   TrendingUp,
   Inbox,
-  Plane,
+  Hotel,
 } from "lucide-react";
 
 import { getAdminSession } from "@/lib/auth";
@@ -25,199 +25,7 @@ export const dynamic = "force-dynamic";
 export default async function Dashboard() {
   const session = await getAdminSession();
 
-  let stats = {
-    total: 0,
-    active: 0,
-    featured: 0,
-    destinations: 0,
-    enquiries: 0,
-    visitors: 0,
-    visits: 0,
-    todayEnquiries: 0,
-    monthEnquiries: 0,
-  };
-
-  let chartData = [];
-
-  try {
-    const now = new Date();
-
-    // Start of today
-    const todayStart = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate()
-    );
-
-    // Start of current month
-    const monthStart = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      1
-    );
-
-    // Last 14 days
-    const fourteenDaysAgo = new Date();
-
-    fourteenDaysAgo.setDate(
-      fourteenDaysAgo.getDate() - 13
-    );
-
-    fourteenDaysAgo.setHours(
-      0,
-      0,
-      0,
-      0
-    );
-
-    const [
-      total,
-      active,
-      featured,
-      groups,
-      enquiries,
-      visitors,
-      visitData,
-      todayEnquiries,
-      monthEnquiries,
-      recentEnquiries,
-    ] = await Promise.all([
-      prisma.package.count(),
-
-      prisma.package.count({
-        where: {
-          active: true,
-        },
-      }),
-
-      prisma.package.count({
-        where: {
-          featured: true,
-        },
-      }),
-
-      prisma.package.groupBy({
-        by: ["destination"],
-      }),
-
-      prisma.enquiry.count(),
-
-      // Unique visitors
-      prisma.siteVisitor.count(),
-
-      // Total visits
-      prisma.siteVisitor.aggregate({
-        _sum: {
-          visitCount: true,
-        },
-      }),
-
-      // Today's enquiries
-      prisma.enquiry.count({
-        where: {
-          createdAt: {
-            gte: todayStart,
-          },
-        },
-      }),
-
-      // This month's enquiries
-      prisma.enquiry.count({
-        where: {
-          createdAt: {
-            gte: monthStart,
-          },
-        },
-      }),
-
-      // Enquiries for chart
-      prisma.enquiry.findMany({
-        where: {
-          createdAt: {
-            gte: fourteenDaysAgo,
-          },
-        },
-        select: {
-          createdAt: true,
-        },
-        orderBy: {
-          createdAt: "asc",
-        },
-      }),
-    ]);
-
-    stats = {
-      total,
-      active,
-      featured,
-      destinations: groups.length,
-      enquiries,
-      visitors,
-      visits:
-        visitData._sum.visitCount || 0,
-      todayEnquiries,
-      monthEnquiries,
-    };
-
-    // -------------------------
-    // CREATE LAST 14 DAYS DATA
-    // -------------------------
-
-    const days = {};
-
-    for (let i = 13; i >= 0; i--) {
-      const date = new Date();
-
-      date.setDate(
-        date.getDate() - i
-      );
-
-      const key = `${date.getFullYear()}-${String(
-        date.getMonth() + 1
-      ).padStart(2, "0")}-${String(
-        date.getDate()
-      ).padStart(2, "0")}`;
-
-      days[key] = {
-        date: date.toLocaleDateString(
-          "en-IN",
-          {
-            day: "2-digit",
-            month: "short",
-          }
-        ),
-
-        enquiries: 0,
-      };
-    }
-
-    recentEnquiries.forEach(
-      (enquiry) => {
-        const date =
-          new Date(
-            enquiry.createdAt
-          );
-
-        const key = `${date.getFullYear()}-${String(
-          date.getMonth() + 1
-        ).padStart(2, "0")}-${String(
-          date.getDate()
-        ).padStart(2, "0")}`;
-
-        if (days[key]) {
-          days[key].enquiries += 1;
-        }
-      }
-    );
-
-    chartData =
-      Object.values(days);
-  } catch (error) {
-    console.error(
-      "Dashboard error:",
-      error
-    );
-  }
+  const { stats, chartData, available } = await getDashboardData();
 
   const cards = [
     {
@@ -262,20 +70,21 @@ export default async function Dashboard() {
 
   return (
     <div className="pb-12">
+      {!available && <p role="alert" className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">Hotel statistics could not be loaded. You can still manage packages, enquiries and reviews using the menu. Reload to retry.</p>}
       {/* ================= HEADER ================= */}
 
       <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
         <div>
           <p className="text-sm font-medium text-slate-500">
             Welcome back,{" "}
-            <span className="font-bold text-[#173f35]">
+            <span className="font-bold text-[#20211f]">
               {session?.name ||
                 "Admin"}
             </span>
           </p>
 
-          <h1 className="mt-2 text-3xl font-black tracking-[-0.04em] text-[#173f35] md:text-4xl">
-            Viago Dashboard
+          <h1 className="mt-2 text-3xl font-black tracking-[-0.04em] text-[#20211f] md:text-4xl">
+            Stayvo Kochi Dashboard
           </h1>
 
           <p className="mt-2 text-sm text-slate-500">
@@ -287,7 +96,7 @@ export default async function Dashboard() {
 
        <Link
   href="/admin/packages/add"
-  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#173f35] px-5 py-3 text-sm font-bold !text-white transition hover:bg-[#24594a] hover:!text-white"
+  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#20211f] px-5 py-3 text-sm font-bold !text-white transition hover:bg-[#34352f] hover:!text-white"
 >
   <Plus size={18} className="text-white" />
   <span className="text-white">Add Package</span>
@@ -306,21 +115,21 @@ export default async function Dashboard() {
           }) => (
             <div
               key={title}
-              className="group rounded-[24px] border border-slate-100 bg-white p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(23,63,53,.08)]"
+              className="group rounded-[24px] border border-slate-100 bg-white p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(32,33,31,.08)]"
             >
               <div className="flex items-start justify-between">
-                <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[#eff5f2] text-[#173f35]">
+                <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[#f5f0e7] text-[#20211f]">
                   <Icon size={21} />
                 </span>
 
                 <ArrowUpRight
                   size={17}
-                  className="text-slate-300 transition group-hover:text-[#c7923e]"
+                  className="text-slate-300 transition group-hover:text-[#c89a40]"
                 />
               </div>
 
-              <div className="mt-6 text-3xl font-black tracking-tight text-[#173f35]">
-                {value.toLocaleString()}
+              <div className="mt-6 text-3xl font-black tracking-tight text-[#20211f]">
+                {available ? value.toLocaleString() : "—"}
               </div>
 
               <div className="mt-1 text-sm font-bold text-slate-700">
@@ -343,13 +152,13 @@ export default async function Dashboard() {
         <div className="rounded-[28px] border border-slate-100 bg-white p-6 md:p-8">
           <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div>
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-[#c7923e]">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-[#c89a40]">
                 <TrendingUp size={15} />
 
                 Enquiry performance
               </div>
 
-              <h2 className="mt-2 text-2xl font-black text-[#173f35]">
+              <h2 className="mt-2 text-2xl font-black text-[#20211f]">
                 Enquiries over time
               </h2>
 
@@ -359,7 +168,7 @@ export default async function Dashboard() {
               </p>
             </div>
 
-            <div className="inline-flex items-center gap-2 rounded-xl bg-[#f8f4e9] px-4 py-2 text-xs font-bold text-[#173f35]">
+            <div className="inline-flex items-center gap-2 rounded-xl bg-[#f8f4e9] px-4 py-2 text-xs font-bold text-[#20211f]">
               <CalendarDays
                 size={15}
               />
@@ -375,7 +184,7 @@ export default async function Dashboard() {
 
         {/* ENQUIRY SUMMARY */}
 
-        <div className="overflow-hidden rounded-[28px] bg-[#173f35] p-7 text-white">
+        <div className="overflow-hidden rounded-[28px] bg-[#20211f] p-7 text-white">
           <div className="relative">
             <div className="absolute -right-16 -top-20 h-44 w-44 rounded-full border border-white/10" />
 
@@ -393,14 +202,14 @@ export default async function Dashboard() {
 
             <p className="mt-2 text-sm leading-6 text-white/60">
               See how many customers are
-              reaching out to Viago.
+              reaching out to Stayvo Kochi.
             </p>
 
             <div className="mt-7 grid gap-3">
               <div className="rounded-2xl bg-white/[0.07] p-5">
                 <div className="text-3xl font-black">
                   {
-                    stats.todayEnquiries
+                    available ? stats.todayEnquiries : "—"
                   }
                 </div>
 
@@ -412,7 +221,7 @@ export default async function Dashboard() {
               <div className="rounded-2xl bg-white/[0.07] p-5">
                 <div className="text-3xl font-black">
                   {
-                    stats.monthEnquiries
+                    available ? stats.monthEnquiries : "—"
                   }
                 </div>
 
@@ -423,7 +232,7 @@ export default async function Dashboard() {
 
               <div className="rounded-2xl bg-white/[0.07] p-5">
                 <div className="text-3xl font-black">
-                  {stats.enquiries}
+                  {available ? stats.enquiries : "—"}
                 </div>
 
                 <p className="mt-1 text-sm text-white/60">
@@ -452,7 +261,7 @@ export default async function Dashboard() {
         {/* VISITORS */}
 
         <div className="rounded-[26px] border border-slate-100 bg-white p-7">
-          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[#eff5f2] text-[#173f35]">
+          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[#f5f0e7] text-[#20211f]">
             <Users size={21} />
           </span>
 
@@ -460,8 +269,8 @@ export default async function Dashboard() {
             Website audience
           </p>
 
-          <div className="mt-2 text-4xl font-black text-[#173f35]">
-            {stats.visitors.toLocaleString()}
+          <div className="mt-2 text-4xl font-black text-[#20211f]">
+            {available ? stats.visitors.toLocaleString() : "—"}
           </div>
 
           <p className="mt-1 text-sm text-slate-500">
@@ -474,8 +283,8 @@ export default async function Dashboard() {
                 Total visits
               </span>
 
-              <span className="font-bold text-[#173f35]">
-                {stats.visits.toLocaleString()}
+              <span className="font-bold text-[#20211f]">
+                {available ? stats.visits.toLocaleString() : "—"}
               </span>
             </div>
           </div>
@@ -489,15 +298,15 @@ export default async function Dashboard() {
           </span>
 
           <p className="mt-5 text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
-            Destination coverage
+            Room & package variety
           </p>
 
-          <div className="mt-2 text-4xl font-black text-[#173f35]">
-            {stats.destinations}
+          <div className="mt-2 text-4xl font-black text-[#20211f]">
+            {available ? stats.destinations : "—"}
           </div>
 
           <p className="mt-1 text-sm text-slate-500">
-            Destinations available
+            Hotel categories available
           </p>
 
           <div className="mt-6 border-t border-slate-100 pt-5">
@@ -506,8 +315,8 @@ export default async function Dashboard() {
                 Featured packages
               </span>
 
-              <span className="font-bold text-[#173f35]">
-                {stats.featured}
+              <span className="font-bold text-[#20211f]">
+                {available ? stats.featured : "—"}
               </span>
             </div>
           </div>
@@ -516,17 +325,17 @@ export default async function Dashboard() {
         {/* TIP */}
 
         <div className="relative overflow-hidden rounded-[26px] bg-[#f8f4e9] p-7">
-          <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full border border-[#c7923e]/20" />
+          <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full border border-[#c89a40]/20" />
 
-          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[#173f35] text-white">
-            <Plane size={21} />
+          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[#20211f] text-white">
+            <Hotel size={21} />
           </span>
 
           <p className="mt-5 text-xs font-bold uppercase tracking-[0.14em] text-[#b98434]">
-            Viago tip
+            Stayvo Kochi tip
           </p>
 
-          <h3 className="mt-2 text-xl font-black text-[#173f35]">
+          <h3 className="mt-2 text-xl font-black text-[#20211f]">
             Keep your storefront fresh.
           </h3>
 
@@ -534,13 +343,13 @@ export default async function Dashboard() {
             Add seasonal packages,
             refresh your pricing and
             feature your strongest
-            holidays to attract more
-            travellers.
+            stays to welcome more
+            guests.
           </p>
 
           <Link
             href="/admin/packages"
-            className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-[#173f35]"
+            className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-[#20211f]"
           >
             Manage packages
 

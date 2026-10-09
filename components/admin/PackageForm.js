@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { hotelCategories } from "@/lib/data";
 import {
   Plus,
   X,
@@ -12,13 +13,13 @@ import {
 
 const fields = [
   ["title", "Package title"],
-  ["destination", "Destination"],
+  ["destination", "Location"],
   ["country", "Country"],
   ["category", "Category"],
   ["duration", "Duration"],
-  ["days", "Number of days", "number"],
+  ["days", "Number of days (including arrival & departure)", "number"],
   ["nights", "Number of nights", "number"],
-  ["price", "Starting price", "number"],
+  ["price", "Starting price (₹)", "number"],
   ["originalPrice", "Original price", "number"],
   ["seoTitle", "SEO title"],
   ["seoDescription", "SEO description"],
@@ -30,7 +31,9 @@ export default function PackageForm({ pkg }) {
   const galleryInputRef = useRef(null);
 
   const [loading, setLoading] = useState(false);
-const [galleryFiles, setGalleryFiles] = useState([]);
+const [galleryFiles, setGalleryFiles] = useState(() => (pkg?.images || []).map(image => ({ id: "existing-"+image.id, url: image.image, preview: image.image, file: null })));
+const galleryFilesRef = useRef(galleryFiles);
+galleryFilesRef.current = galleryFiles;
 const [mainImageFile, setMainImageFile] = useState(null);
 
   // ---------------------------------------
@@ -79,7 +82,7 @@ const [mainImageFile, setMainImageFile] = useState(null);
         (image) => image.id === id
       );
 
-      if (item) {
+      if (item?.file) {
         URL.revokeObjectURL(
           item.preview
         );
@@ -94,11 +97,9 @@ const [mainImageFile, setMainImageFile] = useState(null);
   // Cleanup preview URLs
   useEffect(() => {
     return () => {
-      galleryFiles.forEach(
+      galleryFilesRef.current.forEach(
         (item) => {
-          URL.revokeObjectURL(
-            item.preview
-          );
+          if (item.file) URL.revokeObjectURL(item.preview);
         }
       );
     };
@@ -217,9 +218,7 @@ const [mainImageFile, setMainImageFile] = useState(null);
 
     for (const item of galleryFiles) {
       const uploadedUrl =
-        await uploadImageToCloudinary(
-          item.file
-        );
+        item.url || await uploadImageToCloudinary(item.file);
 
       galleryUrls.push(
         uploadedUrl
@@ -302,17 +301,17 @@ const [mainImageFile, setMainImageFile] = useState(null);
 
       <section className="rounded-[26px] border border-slate-100 bg-white p-6 shadow-sm md:p-7">
         <div className="mb-6">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#c7923e]">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#c89a40]">
             Basic Information
           </p>
 
-          <h2 className="mt-2 text-xl font-black text-[#173f35]">
+          <h2 className="mt-2 text-xl font-black text-[#20211f]">
             Package Details
           </h2>
 
           <p className="mt-1 text-sm text-slate-500">
             Enter the main details
-            travellers will see on the
+            guests will see on the
             website.
           </p>
         </div>
@@ -330,32 +329,19 @@ const [mainImageFile, setMainImageFile] = useState(null);
               >
                 {label}
 
-                <input
-                  name={name}
-                  type={type}
-                  step={
-                    type ===
-                    "number"
-                      ? "0.01"
-                      : undefined
-                  }
-                  required={
-                    ![
-                      "originalPrice",
-                      "seoTitle",
-                      "seoDescription",
-                    ].includes(
-                      name
-                    )
-                  }
-                  defaultValue={
-                    pkg?.[
-                      name
-                    ]?.toString?.() ||
-                    ""
-                  }
-                  className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-normal outline-none transition focus:border-[#173f35] focus:ring-2 focus:ring-[#173f35]/5"
-                />
+                {name === "category" ? (
+                  <select name={name} defaultValue={pkg?.category || "Stay Packages"} required className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-normal">
+                    {hotelCategories.map(category => <option key={category}>{category}</option>)}
+                  </select>
+                ) : (
+                  <input name={name} type={type}
+                    step={type === "number" ? (["days","nights"].includes(name) ? "1" : "0.01") : undefined}
+                    min={type === "number" ? (name === "days" ? 1 : 0) : undefined}
+                    required={!["originalPrice","seoTitle","seoDescription"].includes(name)}
+                    defaultValue={pkg?.[name]?.toString?.() || ({destination:"Kochi",country:"India",duration:"1 Night",days:2,nights:1}[name] ?? "")}
+                    className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-normal outline-none transition focus:border-[#8a621b]"
+                  />
+                )}
               </label>
             )
           )}
@@ -368,16 +354,16 @@ const [mainImageFile, setMainImageFile] = useState(null);
 
       <section className="grid gap-5 rounded-[26px] border border-slate-100 bg-white p-6 shadow-sm md:p-7">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#c7923e]">
-            Traveller Information
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#c89a40]">
+            Guest Information
           </p>
 
-          <h2 className="mt-2 text-xl font-black text-[#173f35]">
+          <h2 className="mt-2 text-xl font-black text-[#20211f]">
             Package Information
           </h2>
 
           <p className="mt-1 text-sm text-slate-500">
-            Explain what travellers can
+            Explain what guests can
             expect from this package.
           </p>
         </div>
@@ -458,7 +444,7 @@ const [mainImageFile, setMainImageFile] = useState(null);
                   pkg?.[name] ||
                   ""
                 }
-                className="mt-2 w-full resize-y rounded-xl border border-slate-200 px-4 py-3 font-normal leading-6 outline-none transition focus:border-[#173f35] focus:ring-2 focus:ring-[#173f35]/5"
+                className="mt-2 w-full resize-y rounded-xl border border-slate-200 px-4 py-3 font-normal leading-6 outline-none transition focus:border-[#20211f] focus:ring-2 focus:ring-[#20211f]/5"
               />
             </label>
           )
@@ -471,11 +457,11 @@ const [mainImageFile, setMainImageFile] = useState(null);
 
       <section className="rounded-[26px] border border-slate-100 bg-white p-6 shadow-sm md:p-7">
         <div className="mb-7">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#c7923e]">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#c89a40]">
             Visuals
           </p>
 
-          <h2 className="mt-2 text-xl font-black text-[#173f35]">
+          <h2 className="mt-2 text-xl font-black text-[#20211f]">
             Package Images
           </h2>
 
@@ -521,7 +507,7 @@ const [mainImageFile, setMainImageFile] = useState(null);
                 ""
               }
               placeholder="https://..."
-              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none transition focus:border-[#173f35]"
+              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none transition focus:border-[#20211f]"
             />
           </label>
         </div>
@@ -531,14 +517,14 @@ const [mainImageFile, setMainImageFile] = useState(null);
         <div className="mt-8 border-t border-slate-100 pt-7">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
             <div className="flex items-start gap-3">
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#eff5f2] text-[#173f35]">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#f5f0e7] text-[#20211f]">
                 <Images
                   size={19}
                 />
               </span>
 
               <div>
-                <h3 className="text-sm font-black text-[#173f35]">
+                <h3 className="text-sm font-black text-[#20211f]">
                   Gallery Images
                 </h3>
 
@@ -555,7 +541,7 @@ const [mainImageFile, setMainImageFile] = useState(null);
               onClick={() =>
                 galleryInputRef.current?.click()
               }
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#173f35] px-4 py-2.5 text-sm font-bold !text-white transition hover:bg-[#24594a]"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#20211f] px-4 py-2.5 text-sm font-bold !text-white transition hover:bg-[#34352f]"
             >
               <Plus size={17} />
 
@@ -585,15 +571,15 @@ const [mainImageFile, setMainImageFile] = useState(null);
               onClick={() =>
                 galleryInputRef.current?.click()
               }
-              className="mt-5 flex min-h-[180px] w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/60 transition hover:border-[#173f35]/40 hover:bg-[#f7faf8]"
+              className="mt-5 flex min-h-[180px] w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/60 transition hover:border-[#20211f]/40 hover:bg-[#f8f5ef]"
             >
-              <span className="grid h-12 w-12 place-items-center rounded-full bg-[#173f35] text-white">
+              <span className="grid h-12 w-12 place-items-center rounded-full bg-[#20211f] text-white">
                 <ImagePlus
                   size={21}
                 />
               </span>
 
-              <span className="mt-3 text-sm font-bold text-[#173f35]">
+              <span className="mt-3 text-sm font-bold text-[#20211f]">
                 Add gallery photos
               </span>
 
@@ -627,7 +613,7 @@ const [mainImageFile, setMainImageFile] = useState(null);
                   onClick={() =>
                     galleryInputRef.current?.click()
                   }
-                  className="inline-flex items-center gap-1.5 text-sm font-bold text-[#173f35]"
+                  className="inline-flex items-center gap-1.5 text-sm font-bold text-[#20211f]"
                 >
                   <Plus
                     size={16}
@@ -690,9 +676,7 @@ const [mainImageFile, setMainImageFile] = useState(null);
                       <div className="px-3 py-2.5">
                         <p className="truncate text-xs font-medium text-slate-500">
                           {
-                            item
-                              .file
-                              .name
+                            item.file?.name || "Saved gallery photo"
                           }
                         </p>
                       </div>
@@ -707,15 +691,15 @@ const [mainImageFile, setMainImageFile] = useState(null);
                   onClick={() =>
                     galleryInputRef.current?.click()
                   }
-                  className="flex aspect-[4/3] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 transition hover:border-[#173f35]/40 hover:bg-[#f7faf8]"
+                  className="flex aspect-[4/3] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 transition hover:border-[#20211f]/40 hover:bg-[#f8f5ef]"
                 >
-                  <span className="grid h-10 w-10 place-items-center rounded-full bg-[#173f35] text-white">
+                  <span className="grid h-10 w-10 place-items-center rounded-full bg-[#20211f] text-white">
                     <Plus
                       size={18}
                     />
                   </span>
 
-                  <span className="mt-2 text-xs font-bold text-[#173f35]">
+                  <span className="mt-2 text-xs font-bold text-[#20211f]">
                     Add more
                   </span>
                 </button>
@@ -734,7 +718,7 @@ const [mainImageFile, setMainImageFile] = useState(null);
               defaultChecked={
                 pkg?.featured
               }
-              className="h-4 w-4 accent-[#173f35]"
+              className="h-4 w-4 accent-[#20211f]"
             />
 
             Featured package
@@ -749,7 +733,7 @@ const [mainImageFile, setMainImageFile] = useState(null);
                   ? pkg.active
                   : true
               }
-              className="h-4 w-4 accent-[#173f35]"
+              className="h-4 w-4 accent-[#20211f]"
             />
 
             Show on website
@@ -762,20 +746,20 @@ const [mainImageFile, setMainImageFile] = useState(null);
       {/* -------------------------------- */}
 
       <section className="rounded-[26px] border border-slate-100 bg-white p-6 shadow-sm md:p-7">
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#c7923e]">
-          Trip Plan
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#c89a40]">
+          Stay & Tour Plan
         </p>
 
-        <h2 className="mt-2 text-xl font-black text-[#173f35]">
+        <h2 className="mt-2 text-xl font-black text-[#20211f]">
           Itinerary
         </h2>
 
         <p className="mt-1 text-sm text-slate-500">
-          Enter one day per line in
+          Optional: enter one day per line in
           this format:
         </p>
 
-        <div className="mt-3 inline-block rounded-lg bg-[#f8f4e9] px-3 py-2 text-xs font-semibold text-[#173f35]">
+        <div className="mt-3 inline-block rounded-lg bg-[#f8f4e9] px-3 py-2 text-xs font-semibold text-[#20211f]">
           Day title | Description
         </div>
 
@@ -791,9 +775,9 @@ const [mainImageFile, setMainImageFile] = useState(null);
                 `${item.title} | ${item.description}`
             )
             .join("\n")}
-          className="mt-4 w-full rounded-xl border border-slate-200 px-4 py-3 leading-6 outline-none transition focus:border-[#173f35]"
+          className="mt-4 w-full rounded-xl border border-slate-200 px-4 py-3 leading-6 outline-none transition focus:border-[#20211f]"
           placeholder={
-            "Arrival | Airport pickup and hotel check-in\nKumarakom sightseeing | Explore Vembanad Lake and nearby attractions\nDeparture | Breakfast, checkout and return journey"
+            "Arrival | Check in at Stayvo Kochi from 12 PM\nExplore Kochi | Add your tour details\nDeparture | Check out by 11 AM"
           }
         />
       </section>
@@ -806,7 +790,7 @@ const [mainImageFile, setMainImageFile] = useState(null);
         <button
           type="submit"
           disabled={loading}
-          className="inline-flex min-w-[170px] items-center justify-center gap-2 rounded-xl bg-[#173f35] px-7 py-3.5 font-bold !text-white transition hover:bg-[#24594a] disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex min-w-[170px] items-center justify-center gap-2 rounded-xl bg-[#20211f] px-7 py-3.5 font-bold !text-white transition hover:bg-[#34352f] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading && (
             <Loader2

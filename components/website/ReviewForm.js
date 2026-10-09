@@ -56,24 +56,24 @@ export default function ReviewForm() {
       <div className="mx-auto max-w-3xl px-5">
         <div className="rounded-[32px] bg-white p-7 shadow-sm md:p-10">
           <div className="text-center">
-            <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#c7923e]">
+            <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#c89a40]">
               Your Experience Matters
             </p>
 
-            <h2 className="mt-3 text-3xl font-black tracking-tight text-[#173f35] md:text-4xl">
-              Share Your Viago Story
+            <h2 className="mt-3 text-3xl font-black tracking-tight text-[#20211f] md:text-4xl">
+              Share Your Stayvo Kochi Story
             </h2>
 
             <p className="mx-auto mt-3 max-w-xl leading-7 text-[#6e746f]">
-              Travelled with us? Tell us about your experience and help other
-              travellers plan their next memorable journey.
+              Stayed with us? Tell us about your experience and help other
+              guests plan their next Kochi stay.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-6">
             <div className="grid gap-5 md:grid-cols-2">
               <div>
-                <label className="mb-2 block text-sm font-bold text-[#173f35]">
+                <label className="mb-2 block text-sm font-bold text-[#20211f]">
                   Your Name *
                 </label>
 
@@ -81,25 +81,25 @@ export default function ReviewForm() {
                   name="name"
                   required
                   placeholder="Enter your name"
-                  className="w-full rounded-2xl border border-black/10 px-4 py-3 outline-none transition focus:border-[#c7923e]"
+                  className="w-full rounded-2xl border border-black/10 px-4 py-3 outline-none transition focus:border-[#c89a40]"
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-bold text-[#173f35]">
+                <label className="mb-2 block text-sm font-bold text-[#20211f]">
                   Location
                 </label>
 
                 <input
                   name="location"
                   placeholder="Eg. Kochi, Kerala"
-                  className="w-full rounded-2xl border border-black/10 px-4 py-3 outline-none transition focus:border-[#c7923e]"
+                  className="w-full rounded-2xl border border-black/10 px-4 py-3 outline-none transition focus:border-[#c89a40]"
                 />
               </div>
             </div>
 
             <div>
-              <label className="mb-3 block text-sm font-bold text-[#173f35]">
+              <label className="mb-3 block text-sm font-bold text-[#20211f]">
                 Your Rating *
               </label>
 
@@ -119,8 +119,8 @@ export default function ReviewForm() {
                     >
                       <Star
                         size={32}
-                        fill={active ? "#c7923e" : "transparent"}
-                        color={active ? "#c7923e" : "#cbd5d1"}
+                        fill={active ? "#c89a40" : "transparent"}
+                        color={active ? "#c89a40" : "#cbd5d1"}
                       />
                     </button>
                   );
@@ -129,7 +129,7 @@ export default function ReviewForm() {
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-bold text-[#173f35]">
+              <label className="mb-2 block text-sm font-bold text-[#20211f]">
                 Your Review *
               </label>
 
@@ -137,8 +137,8 @@ export default function ReviewForm() {
                 name="review"
                 required
                 rows={5}
-                placeholder="Tell us about your travel experience..."
-                className="w-full resize-none rounded-2xl border border-black/10 px-4 py-3 outline-none transition focus:border-[#c7923e]"
+                placeholder="Tell us about your stay experience..."
+                className="w-full resize-none rounded-2xl border border-black/10 px-4 py-3 outline-none transition focus:border-[#c89a40]"
               />
             </div>
 
@@ -157,7 +157,7 @@ export default function ReviewForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-2xl bg-[#173f35] px-6 py-4 font-bold text-white transition hover:bg-[#102f28] disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full rounded-2xl bg-[#20211f] px-6 py-4 font-bold text-white transition hover:bg-[#102f28] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? "Submitting..." : "Submit Review"}
             </button>

@@ -1,0 +1,117 @@
+{
+  "categories": [
+    "Double Rooms",
+    "Family Rooms",
+    "Family Suites",
+    "Capsule Pods",
+    "Stay Packages",
+    "Tours & Transfers"
+  ],
+  "rooms": [
+    {
+      "name": "Double Room AC",
+      "slug": "double-room-ac",
+      "category": "Double Rooms",
+      "beds": 2,
+      "ac": true,
+      "offSeason": 1800,
+      "regularSeason": 2200,
+      "peakSeason": 2800,
+      "description": "A comfortable air-conditioned room for two, with Kochi waiting just outside."
+    },
+    {
+      "name": "Double Room Non-AC",
+      "slug": "double-room-non-ac",
+      "category": "Double Rooms",
+      "beds": 2,
+      "ac": false,
+      "offSeason": 1400,
+      "regularSeason": 1700,
+      "peakSeason": 2200,
+      "description": "A welcoming space for two guests and an easy base for your time in Kochi."
+    },
+    {
+      "name": "4-Bed Room AC",
+      "slug": "four-bed-room-ac",
+      "category": "Family Rooms",
+      "beds": 4,
+      "ac": true,
+      "offSeason": 3500,
+      "regularSeason": 4500,
+      "peakSeason": 5500,
+      "description": "Stay together in an air-conditioned four-bed room, ideal for families and friends."
+    },
+    {
+      "name": "4-Bed Room Non-AC",
+      "slug": "four-bed-room-non-ac",
+      "category": "Family Rooms",
+      "beds": 4,
+      "ac": false,
+      "offSeason": 2500,
+      "regularSeason": 3000,
+      "peakSeason": 4000,
+      "description": "Room for your group of four, with a practical non-AC option for a relaxed city stay."
+    },
+    {
+      "name": "Family Suite AC",
+      "slug": "family-suite-ac",
+      "category": "Family Suites",
+      "beds": 6,
+      "ac": true,
+      "offSeason": 5000,
+      "regularSeason": 6500,
+      "peakSeason": 8000,
+      "description": "Bring everyone along. Our six-bed air-conditioned family suite keeps your group together."
+    },
+    {
+      "name": "Family Suite Non-AC",
+      "slug": "family-suite-non-ac",
+      "category": "Family Suites",
+      "beds": 6,
+      "ac": false,
+      "offSeason": 3500,
+      "regularSeason": 4000,
+      "peakSeason": 5500,
+      "description": "A six-bed non-AC suite for families and groups looking for a convenient Kochi base."
+    },
+    {
+      "name": "Double Capsule Pod AC",
+      "slug": "double-capsule-pod-ac",
+      "category": "Capsule Pods",
+      "beds": 2,
+      "ac": true,
+      "offSeason": 700,
+      "regularSeason": 900,
+      "peakSeason": 1200,
+      "description": "A compact air-conditioned double capsule option for a short and affordable city stopover."
+    },
+    {
+      "name": "Single Capsule Pod AC",
+      "slug": "single-capsule-pod-ac",
+      "category": "Capsule Pods",
+      "beds": 1,
+      "ac": true,
+      "offSeason": 500,
+      "regularSeason": 600,
+      "peakSeason": 800,
+      "description": "Your own compact air-conditioned capsule, made for solo stays in the heart of Kochi."
+    }
+  ],
+  "seasons": [
+    {
+      "name": "Off season",
+      "dates": "June – September",
+      "note": "Monsoon"
+    },
+    {
+      "name": "Regular season",
+      "dates": "October – November · January – March",
+      "note": "Peak dates take priority"
+    },
+    {
+      "name": "Peak season",
+      "dates": "December 20 – January 10 · April – May",
+      "note": "Also holidays & long weekends"
+    }
+  ]
+}

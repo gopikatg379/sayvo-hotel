@@ -13,18 +13,11 @@ export async function POST(request) {
 
     const password = String(form.get("password") || "");
 
-    console.log("LOGIN DEBUG", {
-      email,
-      databaseConfigured: Boolean(process.env.DATABASE_URL),
-    });
-
     const admin = await prisma.admin.findUnique({
       where: {
         email,
       },
     });
-
-    console.log("ADMIN FOUND:", Boolean(admin));
 
     if (!admin) {
       return NextResponse.redirect(
@@ -37,8 +30,6 @@ export async function POST(request) {
       password,
       admin.password
     );
-
-    console.log("PASSWORD VALID:", passwordValid);
 
     if (!passwordValid) {
       return NextResponse.redirect(
@@ -54,7 +45,7 @@ export async function POST(request) {
       303
     );
 
-    response.cookies.set("viago_admin", token, {
+    response.cookies.set("stayvo_admin", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
