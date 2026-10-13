@@ -109,28 +109,23 @@ const [mainImageFile, setMainImageFile] = useState(null);
   // SUBMIT
   // ---------------------------------------
   async function uploadImageToCloudinary(file) {
-  const cloudName =
-    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-
-  const uploadPreset =
-    process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-
-  if (!cloudName || !uploadPreset) {
-    throw new Error(
-      "Cloudinary configuration is missing."
-    );
+  const signatureResponse = await fetch("/api/admin/uploads/signature", { method: "POST" });
+  const signedUpload = await signatureResponse.json();
+  if (!signatureResponse.ok) {
+    throw new Error(signedUpload.message || "Could not authorize the image upload.");
   }
 
   const uploadData = new FormData();
 
   uploadData.append("file", file);
-  uploadData.append(
-    "upload_preset",
-    uploadPreset
-  );
+  uploadData.append("api_key", signedUpload.apiKey);
+  uploadData.append("signature", signedUpload.signature);
+  for (const [key, value] of Object.entries(signedUpload.params)) {
+    uploadData.append(key, String(value));
+  }
 
   const response = await fetch(
-    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+    `https://api.cloudinary.com/v1_1/${signedUpload.cloudName}/image/upload`,
     {
       method: "POST",
       body: uploadData,
@@ -151,6 +146,7 @@ const [mainImageFile, setMainImageFile] = useState(null);
     );
   }
 
+  if (!result.secure_url) throw new Error("The image upload did not return an image URL.");
   return result.secure_url;
 }
 

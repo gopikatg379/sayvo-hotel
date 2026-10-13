@@ -45,6 +45,65 @@ function packageForm(overrides = {}) {
   return form;
 }
 
+test("image upload signatures require an admin session",async()=>{
+  let signatures=0;
+  const mod=await load("app/api/admin/uploads/signature/route.js",{
+    "@/lib/auth":{getAdminSession:async()=>null},
+    "@/lib/cloudinaryUpload":{createCloudinaryUploadSignature:()=>{signatures++;}},
+  });
+  assert.equal((await mod.POST()).status,401);
+  assert.equal(signatures,0);
+});
+
+test("authorized image upload signatures are never cached",async()=>{
+  const upload={cloudName:"hotel-cloud",apiKey:"public-key",params:{timestamp:123,folder:"stayvo/packages",upload_preset:"signed-rooms"},signature:"signed-value"};
+  const mod=await load("app/api/admin/uploads/signature/route.js",{
+    "@/lib/auth":{getAdminSession:async()=>({id:1})},
+    "@/lib/cloudinaryUpload":{createCloudinaryUploadSignature:()=>upload},
+  });
+  const response=await mod.POST();
+  assert.equal(response.status,200);
+  assert.equal(response.headers.get("Cache-Control"),"no-store");
+  assert.deepEqual(await response.json(),upload);
+});
+
+test("upload configuration errors do not expose credentials",async()=>{
+  const mod=await load("app/api/admin/uploads/signature/route.js",{
+    "@/lib/auth":{getAdminSession:async()=>({id:1})},
+    "@/lib/cloudinaryUpload":{createCloudinaryUploadSignature:()=>{throw new Error("private-secret");}},
+  });
+  const response=await mod.POST();
+  assert.equal(response.status,503);
+  assert.ok(!(await response.text()).includes("private-secret"));
+});
+
+test("signed uploads include the preset and fixed folder while keeping the secret server-side",async()=>{
+  const calls=[];
+  const mod=await load("lib/cloudinaryUpload.js",{"cloudinary":{v2:{
+    config:()=>({cloud_name:"hotel-cloud",api_key:"public-key",api_secret:"private-secret"}),
+    utils:{api_sign_request:(params,secret)=>{calls.push({params,secret});return "signed-value";}},
+  }}});
+  const upload=mod.createCloudinaryUploadSignature({NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET:"signed-rooms"});
+  assert.equal(upload.params.upload_preset,"signed-rooms");
+  assert.equal(upload.params.folder,"stayvo/packages");
+  assert.ok(Math.abs(upload.params.timestamp-Math.floor(Date.now()/1000))<=1);
+  assert.equal(calls[0].secret,"private-secret");
+  assert.equal(calls[0].params,upload.params);
+  assert.equal(upload.signature,"signed-value");
+  assert.ok(!JSON.stringify(upload).includes("private-secret"));
+});
+
+test("signed uploads support explicit credentials and reject missing credentials",async()=>{
+  const mod=await load("lib/cloudinaryUpload.js",{"cloudinary":{v2:{
+    config:()=>({}),utils:{api_sign_request:()=>"signed-value"},
+  }}});
+  assert.throws(()=>mod.createCloudinaryUploadSignature({}),/credentials are missing/);
+  const upload=mod.createCloudinaryUploadSignature({CLOUDINARY_CLOUD_NAME:"hotel-cloud",CLOUDINARY_API_KEY:"public-key",CLOUDINARY_API_SECRET:"private-secret",CLOUDINARY_UPLOAD_PRESET:"server-preset",NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET:"legacy-preset"});
+  assert.equal(upload.cloudName,"hotel-cloud");
+  assert.equal(upload.apiKey,"public-key");
+  assert.equal(upload.params.upload_preset,"server-preset");
+});
+
 test("the six room tariffs match the supplied chart",()=>{
   const hotel=JSON.parse(fs.readFileSync("lib/hotel.json","utf8"));
   assert.deepEqual(hotel.rooms.map(room=>[room.offSeason,room.regularSeason,room.peakSeason]),[

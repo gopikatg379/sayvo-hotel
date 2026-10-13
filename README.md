@@ -53,6 +53,6 @@ Seasonal tariff data and room definitions are in `lib/hotel.json`. The tariff pa
 
 ## Image uploads and production
 
-Admin file uploads use the existing Cloudinary unsigned-upload flow. Configure `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` and `NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET`, or use a cover image URL. Existing gallery photos can be retained, removed and extended while editing.
+Admin file uploads use signed Cloudinary uploads authorized by an admin session. Configure `CLOUDINARY_URL`, or `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET`. Keep the API secret on the server. An optional `CLOUDINARY_UPLOAD_PRESET` (or the existing `NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET`) can be signed; unsigned upload whitelisting is not required. Existing gallery photos can be retained, removed and extended while editing. A cover image URL can also be entered manually.
 
 Set the production site URL, secure database settings, admin password and auth secret. Run `npm run build` before deployment.
