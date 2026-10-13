@@ -45,19 +45,19 @@ function packageForm(overrides = {}) {
   return form;
 }
 
-test("the eight seasonal tariffs match the supplied chart",()=>{
+test("the six room tariffs match the supplied chart",()=>{
   const hotel=JSON.parse(fs.readFileSync("lib/hotel.json","utf8"));
   assert.deepEqual(hotel.rooms.map(room=>[room.offSeason,room.regularSeason,room.peakSeason]),[
     [1800,2200,2800],[1400,1700,2200],[3500,4500,5500],[2500,3000,4000],
-    [5000,6500,8000],[3500,4000,5500],[700,900,1200],[500,600,800]
+    [5000,6500,8000],[3500,4000,5500]
   ]);
 });
 
 test("an uninitialized hotel catalog shows the room templates and honours filters",async()=>{
   const mod=await load("lib/packages.js",{"@/lib/prisma":{default:{package:{findMany:async()=>[],count:async()=>0}}}});
-  assert.equal((await mod.getPackages()).length,8);
+  assert.equal((await mod.getPackages()).length,6);
   assert.equal((await mod.getPackages({featured:true})).length,3);
-  assert.equal((await mod.getPackages({category:"Capsule Pods"})).length,2);
+  assert.equal((await mod.getPackages({category:"Capsule Pods"})).length,0);
   assert.equal((await mod.getPackages({destination:"Bali"})).length,0);
 });
 
@@ -95,7 +95,7 @@ test("public catalog filters reuse a lightweight query and admin changes expire 
   let reads = 0;
   const rows = [
     {id:1,category:"Double Rooms",active:true,featured:true,destination:"Kochi"},
-    {id:2,category:"Capsule Pods",active:true,featured:false,destination:"Kochi"},
+    {id:2,category:"Family Rooms",active:true,featured:false,destination:"Kochi"},
     {id:3,category:"Family Suites",active:false,featured:false,destination:"Kochi"},
   ];
   const mod = await load("lib/packages.js", {
@@ -109,7 +109,7 @@ test("public catalog filters reuse a lightweight query and admin changes expire 
   });
   assert.equal((await mod.getPackages()).length,2);
   assert.equal((await mod.getPackages({featured:true})).length,1);
-  assert.equal((await mod.getPackages({category:"Capsule Pods"}))[0].id,2);
+  assert.equal((await mod.getPackages({category:"Family Rooms"}))[0].id,2);
   assert.equal((await mod.getPackages({destination:"kochi"})).length,2);
   assert.equal(reads,1);
   const cache = await load("lib/publicCache.js", {"next/cache":harness.api});
@@ -186,6 +186,34 @@ test("legacy travel packages stay outside the hotel storefront",async()=>{
   assert.equal(await mod.getPackageBySlug("bali"),null);
 });
 
+test("retired capsule pods stay out of catalogs and direct package pages",async()=>{
+  const pod={id:7,category:"Capsule Pods",slug:"double-capsule-pod-ac",active:true,featured:true};
+  const mod=await load("lib/packages.js",{"@/lib/prisma":{default:{package:{
+    findMany:async query=>{
+      assert.ok(!query.where.category.in.includes("Capsule Pods"));
+      return [pod,{id:1,category:"Double Rooms",active:true,featured:true}];
+    },
+    findUnique:async()=>pod,
+  }}}});
+  assert.equal((await mod.getPackages()).length,1);
+  assert.equal((await mod.getPackages({category:"Capsule Pods"})).length,0);
+  assert.equal(await mod.getPackageBySlug(pod.slug),null);
+});
+
+test("saved room descriptions use the current brand and room wording",async()=>{
+  const room={category:"Double Rooms",slug:"double-room-ac",title:"Edited Double Room",price:2100,
+    description:"Stayvo Kochi by Maparani Group. A custom room description.",
+    hotelDetails:"STAYVO KOCHI BY MAPARANI GROUP",inclusions:"One night in the selected room or capsule type"};
+  const mod=await load("lib/packages.js",{"@/lib/prisma":{default:{package:{findUnique:async()=>room}}}});
+  const result=await mod.getPackageBySlug(room.slug);
+  assert.equal(result.description,"Stayvo Kochi by Maprani Group. A custom room description.");
+  assert.equal(result.hotelDetails,"STAYVO KOCHI BY MAPRANI GROUP");
+  assert.equal(result.inclusions,"One night in the selected room type");
+  assert.equal(result.title,room.title);
+  assert.equal(result.price,room.price);
+  assert.equal(room.description,"Stayvo Kochi by Maparani Group. A custom room description.");
+});
+
 test("room package parsing accepts local images, optional itinerary and saved gallery URLs",async()=>{
   const {parsePackageForm}=await load("lib/packageFormData.js");
   const parsed=await parsePackageForm(packageForm({itinerary:"Arrival | Check in from 12 PM\nExplore Kochi | Waterfront walk"}));
@@ -243,7 +271,7 @@ test("room initialization is repeatable and preserves existing room edits",async
   });
   assert.equal((await mod.POST()).status,200);
   assert.equal((await mod.POST()).status,200);
-  assert.equal(rows.size,8);
+  assert.equal(rows.size,6);
   assert.equal(rows.get("double-room-ac").title,"Edited Double Room");
 });
 

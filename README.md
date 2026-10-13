@@ -1,6 +1,6 @@
 # Stayvo Kochi
 
-A Next.js hotel website for Stayvo Kochi by Maparani Group, with the supplied black, gold and white branding, local hotel photography, room tariffs, stay packages, WhatsApp enquiries, and the existing admin features.
+A Next.js hotel website for Stayvo Kochi by Maprani Group, with the supplied black, gold and white branding, local hotel photography, room tariffs, stay packages, WhatsApp enquiries, and the existing admin features.
 
 ## Run locally
 
@@ -20,7 +20,7 @@ npm run dev
 
 Open http://localhost:3000. Admin login is at http://localhost:3000/admin/login.
 
-For a fresh database, `prisma db push` creates every table in the current schema, including review moderation and visitor tracking. The seed adds the configured admin and eight room templates; it preserves existing records.
+For a fresh database, `prisma db push` creates every table in the current schema, including review moderation and visitor tracking. The seed adds the configured admin and six room templates; it preserves existing records.
 
 Development and production builds use Webpack because Turbopack compilation was stalling on the local Windows filesystem. Development compiles routes on demand, so first visits can take longer. To check normal visitor performance, run `npm.cmd run build`, then `npm.cmd start` with the development server stopped.
 
@@ -36,10 +36,10 @@ This creates the configured email if it is missing, or updates its password if i
 
 ## Hotel content and admin
 
-- `/rooms`: eight room types and the three seasonal tariffs transcribed from the supplied chart.
+- `/rooms`: six room types and the three seasonal tariffs transcribed from the supplied chart.
 - `/packages`: room/stay/tour catalog with category, location, budget and duration filters.
 - Package details retain galleries, itineraries, inclusions, exclusions, hotel and transport information, SEO and WhatsApp enquiries.
-- `/admin/packages`: add/edit/delete, images, featured status and public visibility. **Load Stayvo room templates** adds the eight supplied rooms to the connected database without replacing existing entries. Repeated loads preserve edits.
+- `/admin/packages`: add/edit/delete, images, featured status and public visibility. **Load Stayvo room templates** adds the six supplied rooms to the connected database without replacing existing entries. Repeated loads preserve edits.
 - Existing dashboard statistics, enquiries, visitor tracking and review moderation remain available.
 - Public package and approved-review data is cached for 60 seconds and expired after admin changes. Catalog filters share one lightweight database read, and package metadata and detail rendering reuse their data. Failed or stalled database reads are not cached; existing fallback behavior applies after at most five seconds per query.
 - Navigation prefetches pages in production, shows a hotel loading screen when needed, and starts at the top. Visitor tracking runs when the browser is idle. The supplied logo is framed in a gold circle.
