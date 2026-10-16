@@ -12,22 +12,26 @@
       "slug": "double-room-ac",
       "category": "Double Rooms",
       "beds": 2,
+      "adults": 2,
+      "children": 1,
       "ac": true,
       "offSeason": 1800,
       "regularSeason": 2200,
       "peakSeason": 2800,
-      "description": "A comfortable air-conditioned room for two, with Kochi waiting just outside."
+      "description": "An air-conditioned room for 2 adults + 1 child, with a central Kochi location for everyday city visits. Extra bed available at an additional fee."
     },
     {
       "name": "Double Room Non-AC",
       "slug": "double-room-non-ac",
       "category": "Double Rooms",
       "beds": 2,
+      "adults": 2,
+      "children": 1,
       "ac": false,
       "offSeason": 1400,
       "regularSeason": 1700,
       "peakSeason": 2200,
-      "description": "A welcoming space for two guests and an easy base for your time in Kochi."
+      "description": "A practical non-AC room for 2 adults + 1 child in the heart of Kochi. Extra bed available at an additional fee."
     },
     {
       "name": "4-Bed Room AC",
@@ -56,22 +60,26 @@
       "slug": "family-suite-ac",
       "category": "Family Suites",
       "beds": 6,
+      "adults": 6,
+      "children": 4,
       "ac": true,
       "offSeason": 5000,
       "regularSeason": 6500,
       "peakSeason": 8000,
-      "description": "Bring everyone along. Our six-bed air-conditioned family suite keeps your group together."
+      "description": "Keep your larger family together in an air-conditioned suite accommodating up to 6 adults + 4 children. Confirm children’s ages and bedding arrangements with our team."
     },
     {
       "name": "Family Suite Non-AC",
       "slug": "family-suite-non-ac",
       "category": "Family Suites",
       "beds": 6,
+      "adults": 6,
+      "children": 4,
       "ac": false,
       "offSeason": 3500,
       "regularSeason": 4000,
       "peakSeason": 5500,
-      "description": "A six-bed non-AC suite for families and groups looking for a convenient Kochi base."
+      "description": "A spacious non-AC option for larger families, accommodating up to 6 adults + 4 children. Confirm children’s ages and bedding arrangements with our team."
     }
   ],
   "seasons": [

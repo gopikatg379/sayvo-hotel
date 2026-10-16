@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { Menu, X, ArrowUpRight, Phone } from "lucide-react";
 import Logo from "./Logo";
 import { siteConfig } from "@/lib/config";
-const links = [["Home", "/"], ["Rooms & rates", "/rooms"], ["Packages", "/packages"], ["Explore Kochi", "/destinations"], ["About", "/about"], ["Contact", "/contact"]];
+const links = [["Home", "/"], ["Rooms & rates", "/rooms"], ["Packages", "/packages"], ["Location & nearby", "/destinations"], ["About", "/about"], ["Contact", "/contact"]];
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();

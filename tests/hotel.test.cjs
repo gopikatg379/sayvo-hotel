@@ -112,6 +112,43 @@ test("the six room tariffs match the supplied chart",()=>{
   ]);
 });
 
+test("confirmed room occupancy distinguishes adults and children without guessing four-bed capacity",async()=>{
+  const mod=await load("lib/roomOccupancy.js");
+  for(const slug of ["double-room-ac","double-room-non-ac"]) {
+    assert.equal(mod.occupancyLabel(mod.getRoomOccupancy(slug)),"2 adults + 1 child");
+  }
+  for(const slug of ["family-suite-ac","family-suite-non-ac"]) {
+    assert.equal(mod.occupancyLabel(mod.getRoomOccupancy(slug)),"6 adults + 4 children");
+  }
+  assert.equal(mod.getRoomOccupancy("four-bed-room-ac"),null);
+  assert.equal(mod.getRoomOccupancy("four-bed-room-non-ac"),null);
+  assert.equal(mod.getRoomOccupancy("custom-tour"),null);
+  assert.match(mod.extraBedPolicy,/additional fee/);
+});
+
+test("stay enquiry messages retain separate adult and child counts and children’s ages",async()=>{
+  const mod=await load("lib/stayEnquiry.js");
+  assert.equal(mod.guestDetails({adults:"6",children:"4",childrenAges:" 3, 5, 8, 10 "}),"Adults: 6\nChildren: 4\nChildren’s ages: 3, 5, 8, 10");
+  assert.equal(mod.guestDetails({adults:"2",children:"0",childrenAges:"4"}),"Adults: 2\nChildren: 0");
+  assert.equal(mod.guestDetails({adults:"2",children:0,childrenAges:"4"}),"Adults: 2\nChildren: 0");
+  assert.equal(mod.guestDetails({adults:"7+",children:"5+"}),"Adults: 7+\nChildren: 5+");
+});
+
+test("existing room content gains confirmed occupancy while saved photos and custom edits are preserved",async()=>{
+  const room={category:"Family Suites",slug:"family-suite-ac",title:"Edited Family Suite",price:5100,
+    highlights:"6-guest option\nCustom breakfast arrangement",image:"/uploads/family-suite.jpg",
+    images:[{id:22,image:"/uploads/family-suite-gallery.jpg"}],description:"Our custom room description"};
+  const mod=await load("lib/packages.js",{"@/lib/prisma":{default:{package:{findUnique:async()=>room}}}});
+  const result=await mod.getPackageBySlug(room.slug);
+  assert.equal(result.highlights,"6 adults + 4 children\nCustom breakfast arrangement");
+  assert.equal(result.title,room.title);
+  assert.equal(result.description,room.description);
+  assert.equal(result.price,room.price);
+  assert.equal(result.image,room.image);
+  assert.equal(result.images,room.images);
+  assert.equal(room.highlights,"6-guest option\nCustom breakfast arrangement");
+});
+
 test("an uninitialized hotel catalog shows the room templates and honours filters",async()=>{
   const mod=await load("lib/packages.js",{"@/lib/prisma":{default:{package:{findMany:async()=>[],count:async()=>0}}}});
   assert.equal((await mod.getPackages()).length,6);

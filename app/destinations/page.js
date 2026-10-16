@@ -1,10 +1,23 @@
 import Image from "next/image";
-import { ArrowUpRight, MapPin } from "lucide-react";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import WebsiteShell from "@/components/website/WebsiteShell";
+import LocationAdvantages from "@/components/website/LocationAdvantages";
 import CTASection from "@/components/website/CTASection";
-import { destinations } from "@/lib/data";
-import { whatsappUrl } from "@/lib/config";
-export const metadata = { title: "Explore Kochi", description: "Make Stayvo Kochi your base for heritage walks, waterfront evenings and backwater day trips. Enquire about taxis and tour packages." };
-export default function DestinationsPage() {
-  return <WebsiteShell><section className="hotel-page-header"><div className="container-site"><p className="hotel-eyebrow">Beyond your room</p><h1>A city full<br /><em>of little discoveries.</em></h1><p>Start with Kochi. Follow your curiosity. Ask us about taxis and tour packages.</p></div></section><section className="section-pad"><div className="container-site grid gap-12 lg:grid-cols-2"><div className="relative min-h-[480px] overflow-hidden rounded-xl"><Image src="/images/stayvo/rooftop.jpeg" alt="Kochi city views from the Stayvo rooftop" fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" /></div><div className="explore-list">{destinations.map((item,index)=><a key={item.name} href={whatsappUrl(`Hi Stayvo Kochi, please share taxi or tour package options for ${item.name} during my stay.`)} target="_blank" rel="noreferrer"><span>0{index+1}</span><div><h2>{item.name}</h2><p>{item.subtitle}</p></div><ArrowUpRight size={21} /></a>)}<div className="mt-8 flex gap-3 text-sm leading-7 text-[#77716a]"><MapPin size={20} className="shrink-0 text-[#8a621b]" /><p>Tell us what you’d like to see and how much time you have. Routes, availability and charges are confirmed by our team.</p></div></div></div></section><CTASection /></WebsiteShell>;
+
+export const metadata = {
+  title: "Location & nearby landmarks",
+  description: "Stay in central Kochi, within walking distance of South Railway Station, the Metro and Medical Trust Hospital. Near Cochin Shipyard, Maharaja’s College, SRV School, Seematti and Kalyan Silks.",
+};
+
+export default function LocationPage() {
+  return <WebsiteShell>
+    <section className="hotel-page-header"><div className="container-site"><p className="hotel-eyebrow">Location & nearby</p><h1>Less travelling.<br /><em>More convenience.</em></h1><p>Choose a room in the middle of Kochi, close to your train, appointment, campus, shopping or work commitments.</p></div></section>
+    <LocationAdvantages showHeading={false} />
+    <section className="section-pad hotel-cream"><div className="container-site welcome-grid">
+      <div className="welcome-image"><Image src="/images/stayvo/entrance.jpeg" alt="The entrance to Stayvo Kochi" fill sizes="(max-width: 900px) 100vw, 42vw" className="object-cover" /></div>
+      <div><p className="hotel-eyebrow">A useful base for your visit</p><h2 className="hotel-title">Your day in Kochi.<br /><em>Your room close by.</em></h2><p className="section-description">Whether you’re accompanying someone to Medical Trust Hospital, visiting Maharaja’s College or SRV School, shopping at Seematti or Kalyan Silks, or coming for Cochin Shipyard work, our team can help you plan your arrival.</p><p className="section-description">Tell us your destination and travel schedule for directions. Taxi services and local tours can also be arranged on enquiry, with charges confirmed separately.</p><Link className="gold-link mt-6" href="/contact">Get help with your visit <ArrowUpRight size={16} /></Link></div>
+    </div></section>
+    <CTASection />
+  </WebsiteShell>;
 }

@@ -72,7 +72,7 @@ button:disabled { cursor: wait; }
 .hero-photo-caption p { font-size: 8px; color: #e8c986; letter-spacing: .25em; margin-top: 13px; }
 .hero-scroll { position: absolute; bottom: 70px; right: 30px; display: grid; place-items: center; border: 1px solid #ffffff66; width: 42px; height: 42px; border-radius: 50%; }
 .stayvo-enquiry-wrap { position: relative; z-index: 2; margin-top: -28px; }
-.stay-enquiry { display: grid; grid-template-columns: 1.05fr 1fr 1fr .7fr 1.3fr auto; gap: 18px; align-items: center; padding: 29px 26px 18px; background: #fffdf9; box-shadow: 0 14px 55px #0000000c; border: 1px solid #eae2d3; border-radius: 3px; }
+.stay-enquiry { display: grid; grid-template-columns: 1.05fr 1fr 1fr .7fr .7fr 1.3fr auto; gap: 18px; align-items: center; padding: 29px 26px 18px; background: #fffdf9; box-shadow: 0 14px 55px #0000000c; border: 1px solid #eae2d3; border-radius: 3px; }
 .enquiry-intro { border-right: 1px solid #e6dfd2; padding-right: 18px; }
 .enquiry-intro small { display: block; color: #8a621b; font-size: 7px; letter-spacing: .13em; }
 .enquiry-intro strong { display: block; margin-top: 9px; font-family: Georgia, serif; font-size: 22px; font-weight: 400; }
@@ -94,9 +94,32 @@ button:disabled { cursor: wait; }
 .hotel-amenities h3 { font-family: Georgia, serif; font-size: 18px; margin-top: 15px; }
 .hotel-amenities p { font-size: 11px; color: #77716a; margin-top: 8px; }
 .section-heading-row { display: flex; justify-content: space-between; align-items: end; gap: 25px; }
-.stayvo-package { border: 1px solid #e9e1d2; border-radius: 4px; background: #fffdf9; overflow: hidden; }
+.stayvo-package { display: flex; flex-direction: column; border: 1px solid #e9e1d2; border-radius: 4px; background: #fffdf9; overflow: hidden; }
+.stayvo-package > a { flex-shrink: 0; }
+.package-card-body { display: flex; flex-direction: column; flex: 1; }
+.package-card-description { margin-bottom: 18px; }
+.package-card-footer { margin-top: auto; }
 .package-category { position: absolute; left: 16px; top: 16px; background: #fffdf9ed; padding: 9px 12px; color: #20211f; font-size: 9px; text-transform: uppercase; letter-spacing: .12em; }
 .property-photo-label { position: absolute; bottom: 12px; left: 16px; color: white; background: #00000080; padding: 5px 8px; font-size: 9px; }
+.advantages-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+.advantage-card { padding: 30px; border: 1px solid #e9e1d2; background: #fffdf9; border-radius: 4px; }
+.advantage-card > svg { color: #8a621b; }
+.advantage-card .advantage-label { margin: 23px 0 10px; color: #8a621b; text-transform: uppercase; font-size: 9px; font-weight: 700; letter-spacing: .12em; }
+.advantage-card h3 { font: 400 24px/1.25 Georgia, serif; }
+.advantage-card > p:last-child { margin-top: 16px; color: #77716a; font-size: 13px; line-height: 1.85; }
+.location-help { display: flex; justify-content: space-between; align-items: center; gap: 25px; border-top: 1px solid #e9e1d2; margin-top: 30px; padding-top: 25px; }
+.location-help > p { max-width: 660px; color: #77716a; font-size: 12px; line-height: 1.8; }
+.location-help .gold-link { flex-shrink: 0; }
+.family-stay-callout { display: flex; gap: 16px; align-items: flex-start; margin-top: 25px; padding: 21px; border: 1px solid #ddcaa5; background: #fffdf9; }
+.family-stay-callout > svg { flex-shrink: 0; color: #8a621b; }
+.family-stay-callout strong { font-size: 14px; line-height: 1.6; }
+.family-stay-callout p { margin-top: 8px; color: #77716a; font-size: 12px; line-height: 1.8; }
+.room-capacity { margin-bottom: 24px; padding-top: 15px; border-top: 1px solid #e9e1d2; }
+.room-capacity > p { display: flex; align-items: center; gap: 8px; color: #8a621b; font-size: 12px; line-height: 1.6; }
+.room-capacity small { display: block; margin-top: 6px; font-size: 11px; line-height: 1.7; color: #77716a; }
+.room-occupancy-panel { margin-top: 30px; padding: 25px; border: 1px solid #ddcaa5; background: #f8f5ef; border-radius: 4px; }
+.room-occupancy-panel .hotel-eyebrow { margin-bottom: 13px; }
+.room-occupancy-panel > p:not(.hotel-eyebrow) { margin-top: 13px; font-size: 13px; color: #77716a; line-height: 1.85; }
 .package-arrow { border: 1px solid #b69a5e66; color: #8a621b; width: 39px; height: 39px; display: grid; place-items: center; border-radius: 50%; flex-shrink: 0; }
 .package-arrow:hover { background: #e4b449; color: #151614; }
 .rooftop-feature { position: relative; min-height: 550px; padding: 100px 0; color: white; }
@@ -169,10 +192,12 @@ button:disabled { cursor: wait; }
   .desktop-nav { gap: 16px; font-size: 10px; }
   .stayvo-logo strong { font-size: 23px; }
   .stayvo-logo small { font-size: 6px; }
-  .stay-enquiry { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .stay-enquiry { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
   .enquiry-intro { border-right: 0; }
 }
 @media (max-width: 900px) {
+  .advantages-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stay-enquiry { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .desktop-nav, .nav-book { display: none; }
   .mobile-toggle { display: grid; }
   .stayvo-nav { height: 78px; }
@@ -188,6 +213,9 @@ button:disabled { cursor: wait; }
   .section-pad { padding: 70px 0; }
 }
 @media (max-width: 640px) {
+  .advantages-grid { grid-template-columns: 1fr; }
+  .advantage-card { padding: 25px; }
+  .location-help { flex-direction: column; align-items: flex-start; }
   .container-site { width: calc(100% - 36px); }
   .stayvo-topbar { font-size: 8px; }
   .stayvo-hero { grid-template-columns: 1fr; }
