@@ -23,7 +23,7 @@ export default function ContactForm({ defaultPackage = "", packageId }) {
   const inputClass = "mt-2 w-full rounded-lg border border-[#e9e1d2] bg-white px-4 py-3 font-normal outline-none focus:border-[#8a621b]";
   return <form onSubmit={submit} className="rounded-lg border border-[#e9e1d2] bg-white p-6 soft-shadow md:p-8"><p className="hotel-eyebrow">Stay enquiry</p><h2 className="mb-7 font-serif text-3xl">Tell us a little about your visit.</h2><div className="grid gap-5 sm:grid-cols-2">
     <label className="text-xs font-bold">Your name<input name="name" autoComplete="name" required maxLength={120} className={inputClass} /></label>
-    <label className="text-xs font-bold">Mobile number<input name="phone" type="tel" autoComplete="tel" required placeholder="+91 97464 00000" maxLength={18} className={inputClass} /></label>
+    <label className="text-xs font-bold">Mobile number<input name="phone" type="tel" autoComplete="tel" required placeholder="+91 92929 91777" maxLength={18} className={inputClass} /></label>
     <label className="text-xs font-bold">Email (optional)<input name="email" type="email" autoComplete="email" maxLength={254} className={inputClass} /></label>
     <label className="text-xs font-bold">Room or package preference<input name="destination" defaultValue={defaultPackage} maxLength={200} className={inputClass} /></label>
     <label className="text-xs font-bold">Check-in (optional)<input name="checkIn" type="date" className={inputClass} /></label>
